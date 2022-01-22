@@ -8,26 +8,29 @@ function App() {
   const offset_top = 400;
   const margin = 30;
   const legendPadding = 200;
-  var max_num = 0
   const ages = range(0, 91, 5)
   const _scaleAges = scaleBand()
     .domain(ages)
     .range([0, 1250]);
-  const dataByGender = {};
+  const dataByAge = {};
+  const years = [2000, 1900, 2000, 1900]
+  const colors = ["#e0cdcf", "#a27e7e", "#c1cbd7", "#8696a7"];
+  const num = [68, 68, 40, 40]
+  var max_num = 0
 
   for (var i = 0; i < census.length; i+=1) {
-    if (!dataByGender[census[i].Age]) {
-      dataByGender[census[i].Age] = [];
+    if (!dataByAge[census[i].Age]) {
+      dataByAge[census[i].Age] = [];
     }
     var cur = census[i].People;
     if (max_num < cur){
       max_num = cur;
     }
-    dataByGender[census[i].Age].push(census[i].People);
+    dataByAge[census[i].Age].push(census[i].People); // Male 1900, Male 2000, Female 1900, Female 2000.
   };
-  console.log(max_num)
+
   const _scaleY = scaleLinear()
-    .domain([0, 11635647])
+    .domain([0, max_num])
     .range([offset_top, 50]);
 
   return (
@@ -37,50 +40,20 @@ function App() {
           width={chartSize + legendPadding}
           height={425}
         >
-          {ages.map((ages, i) => {
-            return (
-              <rect
-                x={40+i*65+50} 
-                y={offset_top-dataByGender[ages][1]/33245} 
-                width="25" 
-                height={dataByGender[ages][1]/33245} 
-                fill="#C1CBD7" 
-              />
-            );
-          })}
-          {ages.map((ages, i) => {
-            return (
-              <rect
-                x={40+i*65+50} 
-                y={offset_top-dataByGender[ages][0]/33245} 
-                width="25" 
-                height={dataByGender[ages][0]/33245} 
-                fill="#8696A7"
-              />
-            );
-          })}
-          {ages.map((ages, i) => {
-            return (
-              <rect
-                x={68+i*65+50} 
-                y={offset_top-dataByGender[ages][3]/33245} 
-                width="25" 
-                height={dataByGender[ages][3]/33245} 
-                fill="#e0cdcf"
-              />
-            );
-          })}
-          {ages.map((ages, i) => {
-            return (
-              <rect
-                x={68+i*65+50} 
-                y={offset_top-dataByGender[ages][2]/33245} 
-                width="25" 
-                height={dataByGender[ages][2]/33245} 
-                fill="#a27e7e"
-              />
-            );
-          })}
+          {colors.map((color, j)=>{
+            return ages.map((age, i)=>{
+              return (
+                <rect
+                  x={num[j]+i*65+50} 
+                  y={offset_top-dataByAge[age][3-j]/(max_num/(offset_top-50))} 
+                  width="25" 
+                  height={dataByAge[age][3-j]/(max_num/(offset_top-50))} 
+                  fill={color}
+                />
+              );
+            })
+          })} 
+
           <AxisBottom
             strokeWidth={0}
             top={offset_top}
@@ -92,24 +65,24 @@ function App() {
           <AxisLeft strokeWidth={0} left={margin+30} scale={_scaleY} />
 
           <text x="450" y="20" fontSize={25}>U.S. Population, 1900 vs. 2000, Male vs. Female</text>
-
-          <text x="1090" y="80" fontSize={15}>Male</text>
-          <text x="1080" y="140" fontSize={15}>Female</text>
-
+          <text x="1080" y="80" fontSize={15}>Female</text>
+          <text x="1090" y="140" fontSize={15}>Male</text>
           <text x="1325" y={offset_top+20} fontSize={15}>Age</text>
           <text x="10" y="40" fontSize={15}>Number of People</text>
 
           <line x1={chartSize} y1={offset_top} x2="60" y2={offset_top} stroke="black" />
           <line x1="60" y1={offset_top} x2="60" y2={50} stroke="black" />
 
-          <circle cx="1150" cy="60" r="10"fill="#C1CBD7"></circle> 
-          <text x="1170" y="65" fontSize={15}>2000</text>
-          <circle cx="1150" cy="90" r="10"fill="#8696A7"></circle>
-          <text x="1170" y="95" fontSize={15}>1900</text>
-          <circle cx="1150" cy="120" r="10"fill="#e0cdcf"></circle>
-          <text x="1170" y="125" fontSize={15}>2000</text>
-          <circle cx="1150" cy="150" r="10"fill="#a27e7e"></circle>
-          <text x="1170" y="155" fontSize={15}>1900</text>
+          {colors.map((color, j)=>{
+            return (
+              <circle cx="1150" cy={60+j*30} r="10" fill={color}></circle>
+            );
+          })} 
+          {years.map((year, j)=>{
+            return (
+              <text x="1170" y={65+j*30} fontSize={15}>{year}</text>
+            );
+          })} 
         </svg>
 
       </div>
@@ -149,7 +122,7 @@ function App() {
           And from 1900 to 2000, the distribution of the population over the years is getting more evenly distributed. 
           We may also infer that our society and medical technology are providing us with better life that there are much more newborns and longevity people in 2000 than in 1900. 
       </p>
-      <p> All codes can be found on <a href="https://github.com/jennyrrrrr/special-octo-potato">github</a>
+      <p> All codes can be found on <a href="https://github.com/jennyrrrrr/special-octo-potato">github</a>.
       </p>
     </div>
   );
